@@ -3,58 +3,203 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏆 FIFA World Cup 2026 — Live Stream</title>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<title>🏆 FIFA World Cup 2026 — Live Dashboard</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: #0a0a0a; color: #fff; font-family: -apple-system, sans-serif; }
-.header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 20px; text-align: center; border-bottom: 3px solid #e6c200; }
+.header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 25px; text-align: center; border-bottom: 3px solid #e6c200; }
 .header h1 { font-size: 2em; } .header span { color: #e6c200; }
 .layout { display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto; }
-.player-panel { flex: 2; min-width: 600px; } .standings-panel { flex: 1; min-width: 350px; }
-.video-container { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; }
-video { width: 100%; display: block; }
-.channel-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-.channel-btn { padding: 12px 20px; border: 1px solid #333; border-radius: 8px; background: #1a1a1a; color: #fff; cursor: pointer; font-size: 14px; }
-.channel-btn:hover { background: #2a2a2a; border-color: #e6c200; }
-.channel-btn.active { background: #e6c200; color: #000; border-color: #e6c200; font-weight: bold; }
-.card { background: #1a1a2e; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+.main { flex: 2; min-width: 500px; }
+.sidebar { flex: 1; min-width: 350px; }
+.card { background: #1a1a2e; border-radius: 12px; padding: 18px; margin-bottom: 15px; }
 .card h2 { color: #e6c200; margin-bottom: 12px; font-size: 1.1em; }
+.card h3 { color: #aaa; font-size: 13px; margin-bottom: 8px; }
+.stream-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.stream-btn { display: inline-block; padding: 12px 20px; border: 1px solid #333; border-radius: 8px; color: #fff; text-decoration: none; font-size: 14px; transition: all 0.2s; background: #1a1a1a; }
+.stream-btn:hover { background: #e6c200; color: #000; border-color: #e6c200; }
+.stream-btn .flag { margin-right: 6px; }
 .group-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.group-table td { padding: 5px 4px; border-bottom: 1px solid #1a1a2e; }
-.group-table .g1 { border-left: 3px solid #4caf50; } .group-table .g2 { border-left: 3px solid #4caf50; }
+.group-table td { padding: 5px 6px; border-bottom: 1px solid #1a1a2e; }
+.group-table .g1 { border-left: 3px solid #4caf50; } 
+.group-table .g2 { border-left: 3px solid #4caf50; }
 .group-table .g3 { border-left: 3px solid #ff9800; }
 .group-table tr:hover { background: #1e1e36; }
-.refresh { text-align: center; padding: 10px; color: #666; font-size: 12px; }
-.now-playing { padding: 8px 12px; background: #111; border-radius: 6px; font-size: 13px; margin-bottom: 10px; }
-.now-playing span { color: #e6c200; }
-@media (max-width: 900px) { .player-panel, .standings-panel { min-width: 100%; } .layout { flex-direction: column; } }
+.highlight { background: #e6c200; color: #000; padding: 10px 15px; border-radius: 8px; font-weight: bold; margin-bottom: 15px; }
+.matches div { padding: 8px 0; border-bottom: 1px solid #222; }
+.refresh { text-align: center; padding: 15px; color: #555; font-size: 12px; }
+.guide { background: #111; border-radius: 8px; padding: 12px; margin-top: 10px; font-size: 13px; line-height: 1.8; }
+.guide code { background: #222; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+@media (max-width: 800px) { .main, .sidebar { min-width: 100%; } }
 </style>
 </head>
 <body>
-<div class="header"><h1>🏆 <span>FIFA WORLD CUP 2026</span></h1><p style="color:#888">Live Streaming · Standings</p></div>
+<div class="header">
+  <h1>🏆 <span>FIFA WORLD CUP 2026</span></h1>
+  <p style="color:#888;margin-top:5px;">Live Dashboard — Standings · Jadwal · Streaming</p>
+</div>
+
 <div class="layout">
-<div class="player-panel">
-<div class="video-container"><video id="video" controls autoplay></video></div>
-<div class="now-playing">📺 <span id="now-playing">TVRI Nasional 🇮🇩</span></div>
-<div class="channel-bar">
-<button class="channel-btn active" onclick="switchChannel('tvri')">🇮🇩 TVRI Nasional</button>
-<button class="channel-btn" onclick="switchChannel('metrotv')">📡 Metro TV</button>
-<button class="channel-btn" onclick="switchChannel('cnbc')">💹 CNBC Indonesia</button>
-<button class="channel-btn" onclick="switchChannel('bein')">🇺🇸 beIN SPORTS</button>
-<button class="channel-btn" onclick="switchChannel('fifaen')">🇬🇧 FIFA+ English</button>
+  <div class="main">
+    <div class="highlight">
+      ⚠️ Browser gak support streaming langsung (CORS). Klik tombol di bawah → download M3U → buka di <b>VLC Media Player</b>.
+    </div>
+    
+    <div class="card">
+      <h2>🎥 Download Streaming Playlist</h2>
+      <p style="color:#888;font-size:13px;margin-bottom:12px;">Klik salah satu → file .m3u terdownload → buka di VLC</p>
+      <div class="stream-links">
+        <a href="worldcup2026.m3u" class="stream-btn" download>🇮🇩 TVRI Nasional (1080i)</a>
+        <a href="#" onclick="downloadM3U('tvri');return false" class="stream-btn">🇮🇩 TVRI Only</a>
+        <a href="#" onclick="downloadM3U('bein');return false" class="stream-btn">🇺🇸 beIN SPORTS</a>
+        <a href="#" onclick="downloadM3U('full');return false" class="stream-btn">🌍 All World Cup</a>
+      </div>
+    </div>
+
+    <div class="guide">
+      <b>📖 Cara nonton:</b><br>
+      1. Download file <code>.m3u</code> dari tombol di atas<br>
+      2. Buka <b>VLC Media Player</b> di laptop/HP<br>
+      3. <b>Media → Open File</b> → pilih file .m3u<br>
+      4. Klik channel di sidebar VLC → streaming langsung!<br>
+      <br>
+      <b>💡 Kenapa gak di browser?</b> Server streaming TV gak support CORS — browser ngeblok. VLC gak ada masalah ini.
+    </div>
+
+    <div class="card" id="matches-card">
+      <h2>📅 Pertandingan Hari Ini</h2>
+      <div class="matches" id="today-matches">Loading...</div>
+    </div>
+  </div>
+
+  <div class="sidebar" id="standings">Loading standings...</div>
 </div>
-<div class="card"><h2>📅 Today</h2><div id="today-matches">Loading...</div></div>
-</div>
-<div class="standings-panel" id="standings"><div style="text-align:center;padding:30px">Loading...</div></div>
-</div>
-<div class="refresh">Auto-refresh 60s · api.fifa.com</div>
+
+<div class="refresh">🔄 Auto-refresh 60s · api.fifa.com · iptv-org/iptv</div>
+
 <script>
-const CH={tvri:{u:"https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8",n:"TVRI Nasional 🇮🇩"},metrotv:{u:"https://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8",n:"Metro TV"},cnbc:{u:"https://live.cnbcindonesia.com/livecnbc/smil:cnbctv.smil/master.m3u8",n:"CNBC Indonesia"},bein:{u:"https://bein-xtra-bein.amagi.tv/playlist.m3u8",n:"beIN SPORTS 🇺🇸"},fifaen:{u:"https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8",n:"FIFA+ English 🇬🇧"}};
-let hls=null,v=document.getElementById('video');
-function switchChannel(c){let ch=CH[c];if(!ch)return;document.querySelectorAll('.channel-btn').forEach(b=>b.classList.remove('active'));event.target.closest('.channel-btn').classList.add('active');if(hls){hls.destroy();hls=null}v.src='';document.getElementById('now-playing').textContent=ch.n;if(Hls.isSupported()){hls=new Hls({enableWorker:false});hls.loadSource(ch.u);hls.attachMedia(v);hls.on(Hls.Events.MANIFEST_PARSED,()=>v.play().catch(()=>{}))}else if(v.canPlayType('application/vnd.apple.mpegurl')){v.src=ch.u;v.play().catch(()=>{})}}
-async function loadS(){try{let r=await fetch('https://api.fifa.com/api/v3/calendar/17/285023/289273/standing');let d=await r.json(),g={};d.Results.forEach(t=>{let gn=t.Group[0].Description;if(!g[gn])g[gn]=[];g[gn].push({p:t.Position,n:t.Team.Name[0].Description,pl:t.Played,w:t.Won,d:t.Drawn,l:t.Lost,gf:t.For,ga:t.Against,gd:t.GoalsDiference,pt:t.Points})});let h='';Object.keys(g).sort().forEach(gn=>{g[gn].sort((a,b)=>b.pt-a.pt||b.gd-a.gd||b.gf-a.gf);h+='<div class="card"><h2>'+gn+'</h2><table class="group-table">';g[gn].forEach((t,i)=>{let cl=i<2?'g1':(i==2?'g3':'');h+='<tr><td class="'+cl+'">'+t.p+'</td><td>'+t.n+'</td><td>'+t.pl+'</td><td>'+t.gf+'-'+t.ga+'</td><td>'+(t.gd>0?'+':'')+t.gd+'</td><td><b>'+t.pt+'</b></td></tr>'});h+='</table></div>'});document.getElementById('standings').innerHTML=h}catch(e){}}
-switchChannel('tvri');loadS();setInterval(loadS,60000);
+// M3U generators
+function generateM3U(type) {
+  var m3u = '#EXTM3U\n# World Cup 2026 - ' + new Date().toDateString() + '\n';
+  if (type === 'tvri' || type === 'full') {
+    m3u += '#EXTINF:-1,TVRI Nasional (1080i)\nhttps://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8\n';
+  }
+  if (type === 'full') {
+    m3u += '#EXTINF:-1,Metro TV\nhttps://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8\n';
+    m3u += '#EXTINF:-1,CNBC Indonesia\nhttps://live.cnbcindonesia.com/livecnbc/smil:cnbctv.smil/master.m3u8\n';
+  }
+  if (type === 'bein' || type === 'full') {
+    m3u += '#EXTINF:-1,beIN SPORTS XTRA\nhttps://bein-xtra-bein.amagi.tv/playlist.m3u8\n';
+  }
+  if (type === 'full') {
+    m3u += '#EXTINF:-1,FIFA+ English\nhttps://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8\n';
+    m3u += '#EXTINF:-1,SPOTV 2\nhttps://stm.sinalmycn.com/21003/video.m3u8?token=EkP2qSi13ckjQRLSIDoxI5rMZsF5rZyEYzqWjxD248ScEUPYQ0\n';
+  }
+  return m3u;
+}
+
+function downloadM3U(type) {
+  var m3u = generateM3U(type);
+  var blob = new Blob([m3u], {type: 'audio/mpegurl'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'worldcup-' + type + '.m3u';
+  a.click();
+}
+
+// Standings
+async function loadStandings() {
+  try {
+    var r = await fetch('https://api.fifa.com/api/v3/calendar/17/285023/289273/standing');
+    var data = await r.json();
+    var groups = {};
+    data.Results.forEach(function(t) {
+      var g = t.Group[0].Description;
+      if (!groups[g]) groups[g] = [];
+      groups[g].push({
+        pos: t.Position,
+        name: t.Team.Name[0].Description,
+        pl: t.Played, w: t.Won, d: t.Drawn, l: t.Lost,
+        gf: t.For, ga: t.Against, gd: t.GoalsDiference, pts: t.Points
+      });
+    });
+    var html = '';
+    Object.keys(groups).sort().forEach(function(g) {
+      groups[g].sort(function(a,b) { return b.pts - a.pts || b.gd - a.gd || b.gf - a.gf; });
+      html += '<div class="card"><h2>' + g + '</h2><table class="group-table">';
+      groups[g].forEach(function(t, i) {
+        var cl = i < 2 ? 'g1' : (i === 2 ? 'g3' : '');
+        html += '<tr><td class="' + cl + '">' + t.pos + '</td><td>' + t.name + '</td><td>' + t.pl + '</td><td>' + t.gf + '-' + t.ga + '</td><td>' + (t.gd > 0 ? '+' : '') + t.gd + '</td><td><b>' + t.pts + '</b></td></tr>';
+      });
+      html += '</table></div>';
+    });
+    document.getElementById('standings').innerHTML = html;
+  } catch(e) {
+    document.getElementById('standings').innerHTML = '<div class="card"><h2>Standings</h2><p>Unable to load. <button onclick="loadStandings()" style="color:#e6c200;background:none;border:1px solid #e6c200;padding:5px 10px;border-radius:4px;cursor:pointer">Retry</button></p></div>';
+  }
+}
+
+// Today's matches
+async function loadMatches() {
+  try {
+    var r = await fetch('https://api.fifa.com/api/v3/calendar/17/285023/289273/standing');
+    var data = await r.json();
+    var today = {};
+    var teamNames = {};
+    
+    // Build team name lookup
+    data.Results.forEach(function(t) {
+      teamNames[t.Team.IdTeam] = t.Team.Name[0].Description;
+    });
+    
+    data.Results.forEach(function(t) {
+      t.MatchResults.forEach(function(m) {
+        var d = new Date(m.StartTime).toDateString();
+        if (d === new Date().toDateString()) {
+          if (!today[m.IdMatch]) {
+            var home = teamNames[m.HomeTeamId] || 'TBD';
+            var away = teamNames[m.AwayTeamId] || 'TBD';
+            today[m.IdMatch] = { 
+              time: m.StartTime, 
+              home: home, 
+              away: away, 
+              score: null 
+            };
+            if (m.Result === 4) {
+              today[m.IdMatch].score = m.HomeTeamScore + '-' + m.AwayTeamScore;
+            }
+          }
+        }
+      });
+    });
+    
+    var container = document.getElementById('today-matches');
+    var keys = Object.keys(today);
+    if (keys.length === 0) {
+      container.innerHTML = 'Tidak ada pertandingan hari ini.';
+      return;
+    }
+    
+    var matches = keys.map(function(k) { return today[k]; });
+    matches.sort(function(a,b) { return a.time.localeCompare(b.time); });
+    
+    var html = '';
+    matches.forEach(function(m) {
+      var t = new Date(m.time);
+      var timeStr = t.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: false});
+      var label = m.score ? 'FT' : '';
+      html += '<div><b>' + timeStr + '</b> ' + m.home + ' ' + (m.score || 'vs') + ' ' + m.away + ' ' + label + '</div>';
+    });
+    container.innerHTML = html;
+  } catch(e) {
+    document.getElementById('today-matches').innerHTML = 'Unable to load schedule';
+  }
+}
+
+loadStandings();
+loadMatches();
+setInterval(loadStandings, 60000);
+setInterval(loadMatches, 60000);
 </script>
 </body>
 </html>

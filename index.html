@@ -156,6 +156,20 @@ function switchChannel(ch) {
   playChannel(ch);
 }
 
+class CorsLoader extends Hls.DefaultConfig.loader {
+  constructor(config) {
+    super(config);
+    this.proxy = 'https://corsproxy.io/?';
+  }
+  load(context, config, callbacks) {
+    // Route ALL requests through proxy
+    if (context.url.indexOf(this.proxy) === -1) {
+      context.url = this.proxy + encodeURIComponent(context.url);
+    }
+    super.load(context, config, callbacks);
+  }
+}
+
 function playChannel(ch) {
   const c = CHANNELS[ch];
   if (!c) return;
@@ -176,10 +190,13 @@ function playChannel(ch) {
     return;
   }
   
-  // HLS
+  // HLS with custom loader
   if (Hls.isSupported()) {
-    hls = new Hls({ enableWorker: false });
-    hls.loadSource(PROXY + encodeURIComponent(c.url));
+    hls = new Hls({ 
+      enableWorker: false,
+      loader: CorsLoader
+    });
+    hls.loadSource(c.url);
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {

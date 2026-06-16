@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏆 World Cup 2026 + TV Lokal Indonesia — Live</title>
+<title>🏆 World Cup 2026 + TV Lokal — Live</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,7 +14,7 @@
   .layout { display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto; }
   .player-panel { flex: 2; min-width: 600px; }
   .standings-panel { flex: 1; min-width: 350px; }
-  .video-container { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; position: relative; }
+  .video-container { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; }
   video { width: 100%; display: block; }
   .channel-section { margin-bottom: 15px; }
   .channel-section h3 { color: #888; font-size: 13px; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
@@ -22,8 +22,6 @@
   .channel-btn { padding: 8px 14px; border: 1px solid #333; border-radius: 8px; background: #1a1a1a; color: #ccc; cursor: pointer; font-size: 12px; transition: all 0.2s; }
   .channel-btn:hover { background: #2a2a2a; border-color: #e6c200; }
   .channel-btn.active { background: #e6c200; color: #000; border-color: #e6c200; font-weight: bold; }
-  .channel-btn .flag { font-size: 1.1em; }
-  .channel-btn .live-dot { color: #4caf50; font-size: 10px; }
   .card { background: #1a1a2e; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
   .card h2 { color: #e6c200; margin-bottom: 12px; font-size: 1.1em; }
   .group-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -49,7 +47,7 @@
 
 <div class="header">
   <h1>🏆 <span>FIFA WORLD CUP 2026</span> + TV Lokal</h1>
-  <p style="color:#888;font-size:14px;">World Cup Streams • Indonesian TV • Live Standings</p>
+  <p style="color:#888;font-size:14px;">Direct Stream • No Proxy • Live Standings</p>
 </div>
 
 <div class="layout">
@@ -60,7 +58,6 @@
     
     <div class="now-playing">📺 Now Playing: <span id="now-playing">TVRI Nasional 🇮🇩</span></div>
     
-    <!-- World Cup Channels -->
     <div class="channel-section">
       <h3>🏆 World Cup 2026</h3>
       <div class="channel-bar">
@@ -68,35 +65,33 @@
         <button class="channel-btn" onclick="switchChannel('metrotv')">📡 Metro TV</button>
         <button class="channel-btn" onclick="switchChannel('tvone')">📺 tvOne</button>
         <button class="channel-btn" onclick="switchChannel('cnbc')">💹 CNBC Indonesia</button>
-        <button class="channel-btn" onclick="switchChannel('sportv2')">🇧🇷 SPOTV 2</button>
         <button class="channel-btn" onclick="switchChannel('bein')">🇺🇸 beIN SPORTS</button>
       </div>
     </div>
     
-    <!-- Indonesian Local TV -->
     <div class="channel-section">
       <h3>🇮🇩 TV Nasional Indonesia</h3>
       <div class="channel-bar">
-        <button class="channel-btn" onclick="switchChannel('rcti')">RCTI</button>
         <button class="channel-btn" onclick="switchChannel('trans7')">Trans7</button>
         <button class="channel-btn" onclick="switchChannel('transtv')">Trans TV</button>
-        <button class="channel-btn" onclick="switchChannel('mnctv')">MNCTV</button>
-        <button class="channel-btn" onclick="switchChannel('inews')">iNews</button>
         <button class="channel-btn" onclick="switchChannel('antv')">ANTV</button>
         <button class="channel-btn" onclick="switchChannel('btv')">BTV</button>
-        <button class="channel-btn" onclick="switchChannel('garuda')">Garuda TV</button>
-        <button class="channel-btn" onclick="switchChannel('nusantara')">Nusantara TV</button>
-        <button class="channel-btn" onclick="switchChannel('magna')">Magna</button>
         <button class="channel-btn" onclick="switchChannel('beritasatu')">BeritaSatu</button>
-        <button class="channel-btn" onclick="switchChannel('jaktv')">Jak TV</button>
-        <button class="channel-btn" onclick="switchChannel('jawapos')">Jawa Pos TV</button>
+        <button class="channel-btn" onclick="switchChannel('garuda')">Garuda TV</button>
+        <button class="channel-btn" onclick="switchChannel('magna')">Magna</button>
+        <button class="channel-btn" onclick="switchChannel('nusantara')">Nusantara TV</button>
         <button class="channel-btn" onclick="switchChannel('rri')">RRI Net</button>
       </div>
     </div>
 
     <div class="card" style="margin-top:15px;">
-      <h2>📅 Jadwal Hari Ini — Tuesday, 16 June 2026</h2>
+      <h2>📅 Jadwal Hari Ini</h2>
       <div id="today-matches" style="font-size:14px;">Loading...</div>
+    </div>
+    
+    <div class="card">
+      <h2>⚠️ Catatan</h2>
+      <p style="font-size:13px;color:#888;">Beberapa channel TV lokal mungkin tidak support CORS browser. Channel World Cup (TVRI, beIN) confirmed jalan. Kalo muter2, coba channel lain atau refresh halaman.</p>
     </div>
   </div>
 
@@ -105,49 +100,32 @@
   </div>
 </div>
 
-<div class="refresh">Auto-refresh every 60s | Source: api.fifa.com | iptv-org/iptv</div>
+<div class="refresh">Auto-refresh 60s | api.fifa.com | iptv-org/iptv</div>
 
 <script>
 const CHANNELS = {
-  // World Cup
-  tvri: { url: "https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8", name: "TVRI Nasional 🇮🇩", type: "hls" },
-  metrotv: { url: "https://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8", name: "Metro TV", type: "hls" },
-  tvone: { url: "http://202.80.222.20/cdn/iptv/Tvod/001/channel2000018/1024.m3u8", name: "tvOne", type: "hls" },
-  cnbc: { url: "https://live.cnbcindonesia.com/livecnbc/smil:cnbctv.smil/master.m3u8", name: "CNBC Indonesia", type: "hls" },
-  sportv2: { url: "https://stm.sinalmycn.com/21003/video.m3u8?token=EkP2qSi13ckjQRLSIDoxI5rMZsF5rZyEYzqWjxD248ScEUPYQ0", name: "SPOTV 2 🇧🇷", type: "hls" },
-  bein: { url: "https://bein-xtra-bein.amagi.tv/playlist.m3u8", name: "beIN SPORTS 🇺🇸", type: "hls" },
+  // World Cup — confirmed working
+  tvri: { url: "https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8", name: "TVRI Nasional 🇮🇩" },
+  metrotv: { url: "https://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8", name: "Metro TV" },
+  cnbc: { url: "https://live.cnbcindonesia.com/livecnbc/smil:cnbctv.smil/master.m3u8", name: "CNBC Indonesia" },
+  bein: { url: "https://bein-xtra-bein.amagi.tv/playlist.m3u8", name: "beIN SPORTS 🇺🇸" },
   
   // TV Nasional
-  rcti: { url: "https://indihuy.streamized.net/atm/DASH/rcti/manifest.mpd", name: "RCTI HD", type: "dash" },
-  trans7: { url: "https://video.detik.com/trans7/smil:trans7.smil/index.m3u8", name: "Trans7", type: "hls" },
-  transtv: { url: "https://video.detik.com/transtv/smil:transtv.smil/index.m3u8", name: "Trans TV", type: "hls" },
-  mnctv: { url: "https://indihuy.streamized.net/atm/DASH/mnctv/manifest.mpd", name: "MNCTV", type: "dash" },
-  inews: { url: "https://indihuy.streamized.net/atm/DASH/inews/manifest.mpd", name: "iNews", type: "dash" },
-  antv: { url: "http://103.58.160.157:8278/720-ANTV/playlist.m3u8", name: "ANTV", type: "hls" },
-  btv: { url: "https://xtdslboppkkv-pull.bpmedialive.com/live/btv/abr.m3u8", name: "BTV", type: "hls" },
-  garuda: { url: "https://hgmtv.com:19360/garudatvlivestreaming/garudatvlivestreaming.m3u8", name: "Garuda TV", type: "hls" },
-  nusantara: { url: "https://nusantaratv.siar.us/nusantaratv/live/playlist.m3u8", name: "Nusantara TV", type: "hls" },
-  magna: { url: "https://edge.medcom.id/live-edge/smil:magna.smil/playlist.m3u8", name: "Magna Channel", type: "hls" },
-  beritasatu: { url: "https://xtdslboppkkv-pull.bpmedialive.com/live/beritasatu/abr.m3u8", name: "BeritaSatu", type: "hls" },
-  jaktv: { url: "https://indihuy.streamized.net/atm/DASH/JAK_TV/manifest.mpd", name: "Jak TV", type: "dash" },
-  jawapos: { url: "http://122.248.43.242:1935/JAWAPOSTVSBY/_definst_/myStream/playlist.m3u8", name: "Jawa Pos TV", type: "hls" },
-  rri: { url: "https://private-streaming.rri.go.id/memfs/6f77c7b5-feb2-4935-9f89-e7e9fca0a54a_output_0.m3u8", name: "RRI Net", type: "hls" },
+  tvone: { url: "http://202.80.222.20/cdn/iptv/Tvod/001/channel2000018/1024.m3u8", name: "tvOne" },
+  trans7: { url: "https://video.detik.com/trans7/smil:trans7.smil/index.m3u8", name: "Trans7" },
+  transtv: { url: "https://video.detik.com/transtv/smil:transtv.smil/index.m3u8", name: "Trans TV" },
+  antv: { url: "http://103.58.160.157:8278/720-ANTV/playlist.m3u8", name: "ANTV" },
+  btv: { url: "https://xtdslboppkkv-pull.bpmedialive.com/live/btv/abr.m3u8", name: "BTV" },
+  beritasatu: { url: "https://xtdslboppkkv-pull.bpmedialive.com/live/beritasatu/abr.m3u8", name: "BeritaSatu" },
+  garuda: { url: "https://hgmtv.com:19360/garudatvlivestreaming/garudatvlivestreaming.m3u8", name: "Garuda TV" },
+  magna: { url: "https://edge.medcom.id/live-edge/smil:magna.smil/playlist.m3u8", name: "Magna Channel" },
+  nusantara: { url: "https://nusantaratv.siar.us/nusantaratv/live/playlist.m3u8", name: "Nusantara TV" },
+  rri: { url: "https://private-streaming.rri.go.id/memfs/6f77c7b5-feb2-4935-9f89-e7e9fca0a54a_output_0.m3u8", name: "RRI Net" },
 };
 
 let currentChannel = 'tvri';
 let hls = null;
-let dashPlayer = null;
 let video = document.getElementById('video');
-
-// Dynamically load DASH.js for MPD streams
-let dashJsLoaded = false;
-function loadDashJs(callback) {
-  if (dashJsLoaded) { callback(); return; }
-  const script = document.createElement('script');
-  script.src = 'https://cdn.dashjs.org/latest/dash.all.min.js';
-  script.onload = () => { dashJsLoaded = true; callback(); };
-  document.head.appendChild(script);
-}
 
 function switchChannel(ch) {
   currentChannel = ch;
@@ -156,39 +134,22 @@ function switchChannel(ch) {
   playChannel(ch);
 }
 
-
-
 function playChannel(ch) {
   const c = CHANNELS[ch];
   if (!c) return;
   
-  // Destroy previous players
   if (hls) { hls.destroy(); hls = null; }
-  if (dashPlayer) { dashPlayer.reset(); dashPlayer = null; }
   video.src = '';
   
   document.getElementById('now-playing').textContent = c.name;
   
-  if (c.type === 'dash') {
-    loadDashJs(() => {
-      dashPlayer = dashjs.MediaPlayer().create();
-      dashPlayer.initialize(video, PROXY + encodeURIComponent(c.url), true);
-      video.play().catch(()=>{});
-    });
-    return;
-  }
-  
-  // HLS with custom loader
   if (Hls.isSupported()) {
-    hls = new Hls({ 
-      enableWorker: false,
-      
-    });
+    hls = new Hls({ enableWorker: false });
     hls.loadSource(c.url);
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = PROXY + encodeURIComponent(c.url);
+    video.src = c.url;
     video.play().catch(()=>{});
   }
 }
@@ -205,21 +166,18 @@ async function loadStandings() {
         w: t.Won, d: t.Drawn, l: t.Lost, gf: t.For, ga: t.Against,
         gd: t.GoalsDiference, pts: t.Points });
     });
-
     let html = '';
     Object.keys(groups).sort().forEach(g => {
       groups[g].sort((a,b) => b.pts-a.pts || b.gd-a.gd || b.gf-a.gf);
-      html += `<div class="card"><h2>${g}</h2><table class="group-table">`;
+      html += '<div class="card"><h2>'+g+'</h2><table class="group-table">';
       groups[g].forEach((t, i) => {
         const cl = i < 2 ? 'g1' : (i === 2 ? 'g3' : '');
-        html += `<tr><td class="pos ${cl}">${t.pos}</td><td>${t.name}</td><td>${t.p}</td><td>${t.gf}-${t.ga}</td><td>${t.gd>0?'+':''}${t.gd}</td><td class="pts">${t.pts}</td></tr>`;
+        html += '<tr><td class="pos '+cl+'">'+t.pos+'</td><td>'+t.name+'</td><td>'+t.p+'</td><td>'+t.gf+'-'+t.ga+'</td><td>'+(t.gd>0?'+':'')+t.gd+'</td><td class="pts">'+t.pts+'</td></tr>';
       });
       html += '</table></div>';
     });
     document.getElementById('standings').innerHTML = html;
-  } catch(e) {
-    document.getElementById('standings').innerHTML = '<div class="card">Standings unavailable</div>';
-  }
+  } catch(e) {}
 }
 
 async function loadMatches() {
@@ -233,30 +191,25 @@ async function loadMatches() {
         if (d === new Date().toDateString()) {
           if (!today[m.IdMatch]) {
             today[m.IdMatch] = { time: m.StartTime, score: null };
-            if (m.Result === 4) today[m.IdMatch].score = `${m.HomeTeamScore}-${m.AwayTeamScore}`;
+            if (m.Result === 4) today[m.IdMatch].score = m.HomeTeamScore+'-'+m.AwayTeamScore;
           }
         }
       });
     });
-    
     const container = document.getElementById('today-matches');
     if (Object.keys(today).length === 0) {
-      container.innerHTML = 'Tidak ada pertandingan hari ini';
+      container.innerHTML = 'No matches today';
       return;
     }
-    
     let html = '';
     Object.values(today).sort((a,b) => a.time.localeCompare(b.time)).forEach(m => {
       const t = new Date(m.time).toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit', hour12:false});
-      html += `<div style="padding:8px 0;border-bottom:1px solid #222;">
-        ${t} WIB — ${m.score || 'vs'} ${m.score ? '<span class="live-dot">● LIVE</span>' : '<span style="color:#666">(mendatang)</span>'}
-      </div>`;
+      html += '<div style="padding:8px 0;border-bottom:1px solid #222;">'+t+' WIB — '+(m.score||'vs')+'</div>';
     });
     container.innerHTML = html;
   } catch(e) {}
 }
 
-const PROXY = 'https://pregnancy-buyer-genres-ruling.trycloudflare.com/play?url=';
 // Init
 playChannel('tvri');
 loadStandings();

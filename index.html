@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏆 World Cup 2026 — Live</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; color: #fff; font-family: -apple-system, sans-serif; }
+  .header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 20px; text-align: center; border-bottom: 3px solid #e6c200; }
+  .header h1 { font-size: 2em; }
+  .header span { color: #e6c200; }
+  .layout { display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto; }
+  .player-panel { flex: 2; min-width: 600px; }
+  .standings-panel { flex: 1; min-width: 350px; }
+  .video-container { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; }
+  video { width: 100%; display: block; }
+  .channel-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+  .channel-btn { padding: 12px 20px; border: 1px solid #333; border-radius: 8px; background: #1a1a1a; color: #fff; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+  .channel-btn:hover { background: #2a2a2a; border-color: #e6c200; }
+  .channel-btn.active { background: #e6c200; color: #000; border-color: #e6c200; font-weight: bold; }
+  .channel-btn .flag { font-size: 1.2em; }
+  .channel-btn .status { display: block; font-size: 10px; color: #4caf50; }
+  .channel-btn .status.offline { color: #f44336; }
+  .card { background: #1a1a2e; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+  .card h2 { color: #e6c200; margin-bottom: 12px; font-size: 1.1em; }
+  .group-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .group-table th { text-align: left; padding: 6px 4px; border-bottom: 1px solid #2a2a2a; color: #888; font-size: 11px; }
+  .group-table td { padding: 5px 4px; border-bottom: 1px solid #1a1a2e; }
+  .group-table .pos { width: 20px; text-align: center; }
+  .group-table .pts { text-align: center; font-weight: bold; }
+  .group-table .g1 { border-left: 3px solid #4caf50; }
+  .group-table .g2 { border-left: 3px solid #4caf50; }
+  .group-table .g3 { border-left: 3px solid #ff9800; }
+  .group-table tr:hover { background: #1e1e36; }
+  .refresh { text-align: center; padding: 10px; color: #666; font-size: 12px; }
+  .loading { text-align: center; padding: 30px; color: #666; }
+  .score-badge { background: #e6c200; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .player-panel, .standings-panel { min-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏆 <span>FIFA WORLD CUP 2026</span> — Live Stream</h1>
+  <p style="color:#888;font-size:14px;">TVRI Nasional • SPOTV • FIFA+ • beIN SPORTS</p>
+</div>
+
+<div class="layout">
+  <div class="player-panel">
+    <div class="video-container">
+      <video id="video" controls autoplay></video>
+    </div>
+    <div class="channel-bar">
+      <button class="channel-btn active" onclick="switchChannel('tvri')">
+        <span class="flag">🇮🇩</span> TVRI Nasional<br>
+        <span class="status" id="st-tvri">● Live</span>
+      </button>
+      <button class="channel-btn" onclick="switchChannel('sportv2')">
+        <span class="flag">🇧🇷</span> SPOTV 2<br>
+        <span class="status" id="st-sportv2">● Live</span>
+      </button>
+      <button class="channel-btn" onclick="switchChannel('sportv3')">
+        <span class="flag">🇧🇷</span> SPOTV 3<br>
+        <span class="status" id="st-sportv3">● Live</span>
+      </button>
+      <button class="channel-btn" onclick="switchChannel('fifaen')">
+        <span class="flag">🇬🇧</span> FIFA+ EN<br>
+        <span class="status" id="st-fifaen">● Live</span>
+      </button>
+      <button class="channel-btn" onclick="switchChannel('bein')">
+        <span class="flag">🇺🇸</span> beIN SPORTS<br>
+        <span class="status" id="st-bein">● Live</span>
+      </button>
+    </div>
+    <div class="card" style="margin-top:15px;">
+      <h2>📅 Hari Ini — Tuesday, 16 June 2026</h2>
+      <div id="today-matches" style="font-size:14px;">Loading matches...</div>
+    </div>
+  </div>
+
+  <div class="standings-panel" id="standings">
+    <div class="loading">Loading standings...</div>
+  </div>
+</div>
+
+<div class="refresh">Auto-refresh every 60s | Source: api.fifa.com</div>
+
+<script>
+const CHANNELS = {
+  tvri: { url: "https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8", name: "TVRI Nasional 🇮🇩" },
+  sportv2: { url: "https://stm.sinalmycn.com/21003/video.m3u8?token=EkP2qSi13ckjQRLSIDoxI5rMZsF5rZyEYzqWjxD248ScEUPYQ0", name: "SPOTV 2 🇧🇷" },
+  sportv3: { url: "https://stm.sinalmycn.com/21006/video.m3u8?token=EkP2qSi13ckjQRLSIDoxI5rMZsF5rZyEYzqWjxD248ScEUPYQ0", name: "SPOTV 3 🇧🇷" },
+  fifaen: { url: "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8", name: "FIFA+ English 🇬🇧" },
+  bein: { url: "https://bein-xtra-bein.amagi.tv/playlist.m3u8", name: "beIN SPORTS XTRA 🇺🇸" }
+};
+
+let currentChannel = 'tvri';
+let hls = null;
+let video = document.getElementById('video');
+
+function switchChannel(ch) {
+  currentChannel = ch;
+  document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+  event.target.closest('.channel-btn').classList.add('active');
+  playChannel(ch);
+}
+
+function playChannel(ch) {
+  const c = CHANNELS[ch];
+  if (!c) return;
+  
+  if (hls) { hls.destroy(); hls = null; }
+  
+  if (Hls.isSupported()) {
+    hls = new Hls({ enableWorker: false });
+    hls.loadSource(c.url);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
+    hls.on(Hls.Events.ERROR, (e, d) => {
+      if (d.fatal) {
+        document.getElementById('st-' + ch).textContent = '⚠️ Offline';
+        document.getElementById('st-' + ch).className = 'status offline';
+      }
+    });
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = c.url;
+    video.play().catch(()=>{});
+  }
+  
+  document.getElementById('st-' + ch).textContent = '● Live';
+  document.getElementById('st-' + ch).className = 'status';
+}
+
+async function loadStandings() {
+  try {
+    const r = await fetch('https://api.fifa.com/api/v3/calendar/17/285023/289273/standing');
+    const data = await r.json();
+    
+    const groups = {};
+    data.Results.forEach(t => {
+      const g = t.Group[0].Description;
+      if (!groups[g]) groups[g] = [];
+      groups[g].push({
+        pos: t.Position, name: t.Team.Name[0].Description, p: t.Played,
+        w: t.Won, d: t.Drawn, l: t.Lost, gf: t.For, ga: t.Against,
+        gd: t.GoalsDiference, pts: t.Points, flag: t.Team.PictureUrl.replace('{format}-{size}', 'sq-4')
+      });
+    });
+
+    let html = '';
+    Object.keys(groups).sort().forEach(g => {
+      groups[g].sort((a,b) => b.pts-a.pts || b.gd-a.gd || b.gf-a.gf);
+      html += `<div class="card"><h2>${g}</h2><table class="group-table">`;
+      groups[g].forEach((t, i) => {
+        const cl = i < 2 ? 'g1' : (i === 2 ? 'g3' : '');
+        html += `<tr><td class="pos ${cl}">${t.pos}</td><td>${t.name}</td><td>${t.p}</td><td>${t.gf}-${t.ga}</td><td>${t.gd>0?'+':''}${t.gd}</td><td class="pts">${t.pts}</td></tr>`;
+      });
+      html += '</table></div>';
+    });
+    
+    document.getElementById('standings').innerHTML = html;
+  } catch(e) {
+    document.getElementById('standings').innerHTML = '<div class="card">Standings unavailable</div>';
+  }
+}
+
+async function loadMatches() {
+  try {
+    const r = await fetch('https://api.fifa.com/api/v3/calendar/17/285023/289273/standing');
+    const data = await r.json();
+    const today = {};
+    data.Results.forEach(t => {
+      t.MatchResults.forEach(m => {
+        const d = new Date(m.StartTime).toDateString();
+        if (d === new Date().toDateString()) {
+          if (!today[m.IdMatch]) {
+            today[m.IdMatch] = { time: m.StartTime, home: m.HomeTeamId, away: m.AwayTeamId, score: null };
+            if (m.Result === 4) today[m.IdMatch].score = `${m.HomeTeamScore}-${m.AwayTeamScore}`;
+          }
+        }
+      });
+    });
+    
+    if (Object.keys(today).length === 0) {
+      document.getElementById('today-matches').innerHTML = 'No matches scheduled today';
+      return;
+    }
+    
+    let html = '';
+    Object.values(today).sort((a,b) => a.time.localeCompare(b.time)).forEach(m => {
+      const t = new Date(m.time).toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
+      html += `<div style="padding:8px 0;border-bottom:1px solid #222;">${t} — ${m.score || 'vs'} ${m.score ? '' : '(upcoming)'}</div>`;
+    });
+    document.getElementById('today-matches').innerHTML = html;
+  } catch(e) {}
+}
+
+// Init
+playChannel('tvri');
+loadStandings();
+loadMatches();
+setInterval(loadStandings, 60000);
+setInterval(loadMatches, 60000);
+</script>
+
+</body>
+</html>

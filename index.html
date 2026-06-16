@@ -156,19 +156,7 @@ function switchChannel(ch) {
   playChannel(ch);
 }
 
-class CorsLoader extends Hls.DefaultConfig.loader {
-  constructor(config) {
-    super(config);
-    this.proxy = 'https://corsproxy.io/?';
-  }
-  load(context, config, callbacks) {
-    // Route ALL requests through proxy
-    if (context.url.indexOf(this.proxy) === -1) {
-      context.url = this.proxy + encodeURIComponent(context.url);
-    }
-    super.load(context, config, callbacks);
-  }
-}
+
 
 function playChannel(ch) {
   const c = CHANNELS[ch];
@@ -194,7 +182,7 @@ function playChannel(ch) {
   if (Hls.isSupported()) {
     hls = new Hls({ 
       enableWorker: false,
-      loader: CorsLoader
+      
     });
     hls.loadSource(c.url);
     hls.attachMedia(video);
@@ -268,7 +256,7 @@ async function loadMatches() {
   } catch(e) {}
 }
 
-const PROXY = 'https://corsproxy.io/?';
+const PROXY = 'https://pregnancy-buyer-genres-ruling.trycloudflare.com/play?url=';
 // Init
 playChannel('tvri');
 loadStandings();

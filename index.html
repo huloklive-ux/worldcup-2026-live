@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏆 World Cup 2026 — Live</title>
+<title>🏆 World Cup 2026 + TV Lokal Indonesia — Live</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,15 +14,16 @@
   .layout { display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto; }
   .player-panel { flex: 2; min-width: 600px; }
   .standings-panel { flex: 1; min-width: 350px; }
-  .video-container { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; }
+  .video-container { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; position: relative; }
   video { width: 100%; display: block; }
-  .channel-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-  .channel-btn { padding: 12px 20px; border: 1px solid #333; border-radius: 8px; background: #1a1a1a; color: #fff; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+  .channel-section { margin-bottom: 15px; }
+  .channel-section h3 { color: #888; font-size: 13px; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+  .channel-bar { display: flex; flex-wrap: wrap; gap: 6px; }
+  .channel-btn { padding: 8px 14px; border: 1px solid #333; border-radius: 8px; background: #1a1a1a; color: #ccc; cursor: pointer; font-size: 12px; transition: all 0.2s; }
   .channel-btn:hover { background: #2a2a2a; border-color: #e6c200; }
   .channel-btn.active { background: #e6c200; color: #000; border-color: #e6c200; font-weight: bold; }
-  .channel-btn .flag { font-size: 1.2em; }
-  .channel-btn .status { display: block; font-size: 10px; color: #4caf50; }
-  .channel-btn .status.offline { color: #f44336; }
+  .channel-btn .flag { font-size: 1.1em; }
+  .channel-btn .live-dot { color: #4caf50; font-size: 10px; }
   .card { background: #1a1a2e; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
   .card h2 { color: #e6c200; margin-bottom: 12px; font-size: 1.1em; }
   .group-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -36,7 +37,8 @@
   .group-table tr:hover { background: #1e1e36; }
   .refresh { text-align: center; padding: 10px; color: #666; font-size: 12px; }
   .loading { text-align: center; padding: 30px; color: #666; }
-  .score-badge { background: #e6c200; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+  .now-playing { padding: 8px 12px; background: #111; border-radius: 6px; font-size: 13px; margin-bottom: 10px; }
+  .now-playing span { color: #e6c200; }
   @media (max-width: 900px) {
     .layout { flex-direction: column; }
     .player-panel, .standings-panel { min-width: 100%; }
@@ -46,8 +48,8 @@
 <body>
 
 <div class="header">
-  <h1>🏆 <span>FIFA WORLD CUP 2026</span> — Live Stream</h1>
-  <p style="color:#888;font-size:14px;">TVRI Nasional • SPOTV • FIFA+ • beIN SPORTS</p>
+  <h1>🏆 <span>FIFA WORLD CUP 2026</span> + TV Lokal</h1>
+  <p style="color:#888;font-size:14px;">World Cup Streams • Indonesian TV • Live Standings</p>
 </div>
 
 <div class="layout">
@@ -55,31 +57,46 @@
     <div class="video-container">
       <video id="video" controls autoplay></video>
     </div>
-    <div class="channel-bar">
-      <button class="channel-btn active" onclick="switchChannel('tvri')">
-        <span class="flag">🇮🇩</span> TVRI Nasional<br>
-        <span class="status" id="st-tvri">● Live</span>
-      </button>
-      <button class="channel-btn" onclick="switchChannel('sportv2')">
-        <span class="flag">🇧🇷</span> SPOTV 2<br>
-        <span class="status" id="st-sportv2">● Live</span>
-      </button>
-      <button class="channel-btn" onclick="switchChannel('sportv3')">
-        <span class="flag">🇧🇷</span> SPOTV 3<br>
-        <span class="status" id="st-sportv3">● Live</span>
-      </button>
-      <button class="channel-btn" onclick="switchChannel('fifaen')">
-        <span class="flag">🇬🇧</span> FIFA+ EN<br>
-        <span class="status" id="st-fifaen">● Live</span>
-      </button>
-      <button class="channel-btn" onclick="switchChannel('bein')">
-        <span class="flag">🇺🇸</span> beIN SPORTS<br>
-        <span class="status" id="st-bein">● Live</span>
-      </button>
+    
+    <div class="now-playing">📺 Now Playing: <span id="now-playing">TVRI Nasional 🇮🇩</span></div>
+    
+    <!-- World Cup Channels -->
+    <div class="channel-section">
+      <h3>🏆 World Cup 2026</h3>
+      <div class="channel-bar">
+        <button class="channel-btn active" onclick="switchChannel('tvri')">🇮🇩 TVRI Nasional</button>
+        <button class="channel-btn" onclick="switchChannel('metrotv')">📡 Metro TV</button>
+        <button class="channel-btn" onclick="switchChannel('tvone')">📺 tvOne</button>
+        <button class="channel-btn" onclick="switchChannel('cnbc')">💹 CNBC Indonesia</button>
+        <button class="channel-btn" onclick="switchChannel('sportv2')">🇧🇷 SPOTV 2</button>
+        <button class="channel-btn" onclick="switchChannel('bein')">🇺🇸 beIN SPORTS</button>
+      </div>
     </div>
+    
+    <!-- Indonesian Local TV -->
+    <div class="channel-section">
+      <h3>🇮🇩 TV Nasional Indonesia</h3>
+      <div class="channel-bar">
+        <button class="channel-btn" onclick="switchChannel('rcti')">RCTI</button>
+        <button class="channel-btn" onclick="switchChannel('trans7')">Trans7</button>
+        <button class="channel-btn" onclick="switchChannel('transtv')">Trans TV</button>
+        <button class="channel-btn" onclick="switchChannel('mnctv')">MNCTV</button>
+        <button class="channel-btn" onclick="switchChannel('inews')">iNews</button>
+        <button class="channel-btn" onclick="switchChannel('antv')">ANTV</button>
+        <button class="channel-btn" onclick="switchChannel('btv')">BTV</button>
+        <button class="channel-btn" onclick="switchChannel('garuda')">Garuda TV</button>
+        <button class="channel-btn" onclick="switchChannel('nusantara')">Nusantara TV</button>
+        <button class="channel-btn" onclick="switchChannel('magna')">Magna</button>
+        <button class="channel-btn" onclick="switchChannel('beritasatu')">BeritaSatu</button>
+        <button class="channel-btn" onclick="switchChannel('jaktv')">Jak TV</button>
+        <button class="channel-btn" onclick="switchChannel('jawapos')">Jawa Pos TV</button>
+        <button class="channel-btn" onclick="switchChannel('rri')">RRI Net</button>
+      </div>
+    </div>
+
     <div class="card" style="margin-top:15px;">
-      <h2>📅 Hari Ini — Tuesday, 16 June 2026</h2>
-      <div id="today-matches" style="font-size:14px;">Loading matches...</div>
+      <h2>📅 Jadwal Hari Ini — Tuesday, 16 June 2026</h2>
+      <div id="today-matches" style="font-size:14px;">Loading...</div>
     </div>
   </div>
 
@@ -88,20 +105,49 @@
   </div>
 </div>
 
-<div class="refresh">Auto-refresh every 60s | Source: api.fifa.com</div>
+<div class="refresh">Auto-refresh every 60s | Source: api.fifa.com | iptv-org/iptv</div>
 
 <script>
 const CHANNELS = {
-  tvri: { url: "https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8", name: "TVRI Nasional 🇮🇩" },
-  sportv2: { url: "https://stm.sinalmycn.com/21003/video.m3u8?token=EkP2qSi13ckjQRLSIDoxI5rMZsF5rZyEYzqWjxD248ScEUPYQ0", name: "SPOTV 2 🇧🇷" },
-  sportv3: { url: "https://stm.sinalmycn.com/21006/video.m3u8?token=EkP2qSi13ckjQRLSIDoxI5rMZsF5rZyEYzqWjxD248ScEUPYQ0", name: "SPOTV 3 🇧🇷" },
-  fifaen: { url: "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8", name: "FIFA+ English 🇬🇧" },
-  bein: { url: "https://bein-xtra-bein.amagi.tv/playlist.m3u8", name: "beIN SPORTS XTRA 🇺🇸" }
+  // World Cup
+  tvri: { url: "https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8", name: "TVRI Nasional 🇮🇩", type: "hls" },
+  metrotv: { url: "https://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8", name: "Metro TV", type: "hls" },
+  tvone: { url: "http://202.80.222.20/cdn/iptv/Tvod/001/channel2000018/1024.m3u8", name: "tvOne", type: "hls" },
+  cnbc: { url: "https://live.cnbcindonesia.com/livecnbc/smil:cnbctv.smil/master.m3u8", name: "CNBC Indonesia", type: "hls" },
+  sportv2: { url: "https://stm.sinalmycn.com/21003/video.m3u8?token=EkP2qSi13ckjQRLSIDoxI5rMZsF5rZyEYzqWjxD248ScEUPYQ0", name: "SPOTV 2 🇧🇷", type: "hls" },
+  bein: { url: "https://bein-xtra-bein.amagi.tv/playlist.m3u8", name: "beIN SPORTS 🇺🇸", type: "hls" },
+  
+  // TV Nasional
+  rcti: { url: "https://indihuy.streamized.net/atm/DASH/rcti/manifest.mpd", name: "RCTI HD", type: "dash" },
+  trans7: { url: "https://video.detik.com/trans7/smil:trans7.smil/index.m3u8", name: "Trans7", type: "hls" },
+  transtv: { url: "https://video.detik.com/transtv/smil:transtv.smil/index.m3u8", name: "Trans TV", type: "hls" },
+  mnctv: { url: "https://indihuy.streamized.net/atm/DASH/mnctv/manifest.mpd", name: "MNCTV", type: "dash" },
+  inews: { url: "https://indihuy.streamized.net/atm/DASH/inews/manifest.mpd", name: "iNews", type: "dash" },
+  antv: { url: "http://103.58.160.157:8278/720-ANTV/playlist.m3u8", name: "ANTV", type: "hls" },
+  btv: { url: "https://xtdslboppkkv-pull.bpmedialive.com/live/btv/abr.m3u8", name: "BTV", type: "hls" },
+  garuda: { url: "https://hgmtv.com:19360/garudatvlivestreaming/garudatvlivestreaming.m3u8", name: "Garuda TV", type: "hls" },
+  nusantara: { url: "https://nusantaratv.siar.us/nusantaratv/live/playlist.m3u8", name: "Nusantara TV", type: "hls" },
+  magna: { url: "https://edge.medcom.id/live-edge/smil:magna.smil/playlist.m3u8", name: "Magna Channel", type: "hls" },
+  beritasatu: { url: "https://xtdslboppkkv-pull.bpmedialive.com/live/beritasatu/abr.m3u8", name: "BeritaSatu", type: "hls" },
+  jaktv: { url: "https://indihuy.streamized.net/atm/DASH/JAK_TV/manifest.mpd", name: "Jak TV", type: "dash" },
+  jawapos: { url: "http://122.248.43.242:1935/JAWAPOSTVSBY/_definst_/myStream/playlist.m3u8", name: "Jawa Pos TV", type: "hls" },
+  rri: { url: "https://private-streaming.rri.go.id/memfs/6f77c7b5-feb2-4935-9f89-e7e9fca0a54a_output_0.m3u8", name: "RRI Net", type: "hls" },
 };
 
 let currentChannel = 'tvri';
 let hls = null;
+let dashPlayer = null;
 let video = document.getElementById('video');
+
+// Dynamically load DASH.js for MPD streams
+let dashJsLoaded = false;
+function loadDashJs(callback) {
+  if (dashJsLoaded) { callback(); return; }
+  const script = document.createElement('script');
+  script.src = 'https://cdn.dashjs.org/latest/dash.all.min.js';
+  script.onload = () => { dashJsLoaded = true; callback(); };
+  document.head.appendChild(script);
+}
 
 function switchChannel(ch) {
   currentChannel = ch;
@@ -114,42 +160,45 @@ function playChannel(ch) {
   const c = CHANNELS[ch];
   if (!c) return;
   
+  // Destroy previous players
   if (hls) { hls.destroy(); hls = null; }
+  if (dashPlayer) { dashPlayer.reset(); dashPlayer = null; }
+  video.src = '';
   
+  document.getElementById('now-playing').textContent = c.name;
+  
+  if (c.type === 'dash') {
+    loadDashJs(() => {
+      dashPlayer = dashjs.MediaPlayer().create();
+      dashPlayer.initialize(video, c.url, true);
+      video.play().catch(()=>{});
+    });
+    return;
+  }
+  
+  // HLS
   if (Hls.isSupported()) {
     hls = new Hls({ enableWorker: false });
     hls.loadSource(c.url);
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
-    hls.on(Hls.Events.ERROR, (e, d) => {
-      if (d.fatal) {
-        document.getElementById('st-' + ch).textContent = '⚠️ Offline';
-        document.getElementById('st-' + ch).className = 'status offline';
-      }
-    });
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = c.url;
     video.play().catch(()=>{});
   }
-  
-  document.getElementById('st-' + ch).textContent = '● Live';
-  document.getElementById('st-' + ch).className = 'status';
 }
 
 async function loadStandings() {
   try {
     const r = await fetch('https://api.fifa.com/api/v3/calendar/17/285023/289273/standing');
     const data = await r.json();
-    
     const groups = {};
     data.Results.forEach(t => {
       const g = t.Group[0].Description;
       if (!groups[g]) groups[g] = [];
-      groups[g].push({
-        pos: t.Position, name: t.Team.Name[0].Description, p: t.Played,
+      groups[g].push({ pos: t.Position, name: t.Team.Name[0].Description, p: t.Played,
         w: t.Won, d: t.Drawn, l: t.Lost, gf: t.For, ga: t.Against,
-        gd: t.GoalsDiference, pts: t.Points, flag: t.Team.PictureUrl.replace('{format}-{size}', 'sq-4')
-      });
+        gd: t.GoalsDiference, pts: t.Points });
     });
 
     let html = '';
@@ -162,7 +211,6 @@ async function loadStandings() {
       });
       html += '</table></div>';
     });
-    
     document.getElementById('standings').innerHTML = html;
   } catch(e) {
     document.getElementById('standings').innerHTML = '<div class="card">Standings unavailable</div>';
@@ -179,24 +227,27 @@ async function loadMatches() {
         const d = new Date(m.StartTime).toDateString();
         if (d === new Date().toDateString()) {
           if (!today[m.IdMatch]) {
-            today[m.IdMatch] = { time: m.StartTime, home: m.HomeTeamId, away: m.AwayTeamId, score: null };
+            today[m.IdMatch] = { time: m.StartTime, score: null };
             if (m.Result === 4) today[m.IdMatch].score = `${m.HomeTeamScore}-${m.AwayTeamScore}`;
           }
         }
       });
     });
     
+    const container = document.getElementById('today-matches');
     if (Object.keys(today).length === 0) {
-      document.getElementById('today-matches').innerHTML = 'No matches scheduled today';
+      container.innerHTML = 'Tidak ada pertandingan hari ini';
       return;
     }
     
     let html = '';
     Object.values(today).sort((a,b) => a.time.localeCompare(b.time)).forEach(m => {
-      const t = new Date(m.time).toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
-      html += `<div style="padding:8px 0;border-bottom:1px solid #222;">${t} — ${m.score || 'vs'} ${m.score ? '' : '(upcoming)'}</div>`;
+      const t = new Date(m.time).toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit', hour12:false});
+      html += `<div style="padding:8px 0;border-bottom:1px solid #222;">
+        ${t} WIB — ${m.score || 'vs'} ${m.score ? '<span class="live-dot">● LIVE</span>' : '<span style="color:#666">(mendatang)</span>'}
+      </div>`;
     });
-    document.getElementById('today-matches').innerHTML = html;
+    container.innerHTML = html;
   } catch(e) {}
 }
 
@@ -207,6 +258,5 @@ loadMatches();
 setInterval(loadStandings, 60000);
 setInterval(loadMatches, 60000);
 </script>
-
 </body>
 </html>

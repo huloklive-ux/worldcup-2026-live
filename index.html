@@ -170,7 +170,7 @@ function playChannel(ch) {
   if (c.type === 'dash') {
     loadDashJs(() => {
       dashPlayer = dashjs.MediaPlayer().create();
-      dashPlayer.initialize(video, c.url, true);
+      dashPlayer.initialize(video, PROXY + encodeURIComponent(c.url), true);
       video.play().catch(()=>{});
     });
     return;
@@ -179,11 +179,11 @@ function playChannel(ch) {
   // HLS
   if (Hls.isSupported()) {
     hls = new Hls({ enableWorker: false });
-    hls.loadSource(c.url);
+    hls.loadSource(PROXY + encodeURIComponent(c.url));
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = c.url;
+    video.src = PROXY + encodeURIComponent(c.url);
     video.play().catch(()=>{});
   }
 }
@@ -251,6 +251,7 @@ async function loadMatches() {
   } catch(e) {}
 }
 
+const PROXY = 'https://corsproxy.io/?';
 // Init
 playChannel('tvri');
 loadStandings();
